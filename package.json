@@ -1,0 +1,26 @@
+{
+  "name": "googletakeoutparser",
+  "version": "1.1.0",
+  "description": "A robust program powered by NodeJS to format and update metadata for your Google Takeout export, keeping your files up-to-date.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node gui.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BrianWalczak/GoogleTakeoutParser.git"
+  },
+  "keywords": [
+    "google",
+    "photos"
+  ],
+  "author": "Brian Walczak",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/BrianWalczak/GoogleTakeoutParser/issues"
+  },
+  "homepage": "https://github.com/BrianWalczak/GoogleTakeoutParser#readme",
+  "dependencies": {
+    "chalk": "^2.4.2"
+  }
+}

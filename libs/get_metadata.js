@@ -3,8 +3,8 @@ const path = require('path');
 
 const { bracketSwap, shortenName, removeExtra } = require('./utils/dissect.files.js');
 
-function dissectFile(file) {
-    let newFile = file;
+function dissectFile(file, legacy = false) {
+    let newFile = legacy ? file : file + '.supplemental-metadata';
     newFile = bracketSwap(newFile);
     newFile = shortenName(newFile);
     newFile = removeExtra(newFile);
@@ -19,7 +19,17 @@ async function getMetadata(directoryPath, file) {
 
         return metadata;
     } catch(error) {
-        return undefined;
+        if (error.code === 'ENOENT') {
+            // check for legacy naming (w/o supplementary-metadata)
+            try {
+                let metadata = await fs.promises.readFile(path.join(directoryPath, `${dissectFile(file, true)}.json`), 'utf8');
+                metadata = JSON.parse(metadata);
+        
+                return metadata;
+            } catch(error) {
+                return undefined;
+            }
+        }
     }
 }
 
@@ -42,14 +52,22 @@ async function scanForMetadata(directoryPath) {
                 continue;
             }
 
-            const jsonFilePath = path.join(directoryPath, `${dissectFile(file)}.json`); // not all functions may be used for each file
+            let jsonFilePath = path.join(directoryPath, `${dissectFile(file)}.json`); // not all functions may be used for each file
 
             // Check if .json file with the same name exists
             try {
                 await fs.promises.access(jsonFilePath);
                 fileList.success.push(file);
             } catch {
-                fileList.failed.push(file);
+                // check for legacy naming (w/o supplementary-metadata)
+                try {
+                    jsonFilePath = path.join(directoryPath, `${dissectFile(file, true)}.json`);
+                    await fs.promises.access(jsonFilePath);
+
+                    fileList.success.push(file);
+                } catch {
+                    fileList.failed.push(file);
+                }
             }
         }
 

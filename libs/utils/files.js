@@ -9,6 +9,7 @@ async function moveFile(sourcePath, destPath) {
         await fs.promises.rename(sourcePath, destPath);
         return true;
     } catch (error) {
+        console.error(error);
         return false;
     }
 }
